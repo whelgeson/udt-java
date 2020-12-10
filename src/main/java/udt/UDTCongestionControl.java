@@ -8,7 +8,7 @@ import udt.util.Util;
 import java.util.List;
 
 /**
- * default UDT congestion control.<br/>
+ * default UDT congestion control.
  * <p>
  * The algorithm is adapted from the C++ reference implementation.
  */

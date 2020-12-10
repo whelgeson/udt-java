@@ -138,7 +138,7 @@ public class ServerSession extends UDTSession {
     }
 
     /**
-     * handle the connection handshake:<br/>
+     * handle the connection handshake:
      * <ul>
      * <li>set initial sequence number</li>
      * <li>send response handshake</li>

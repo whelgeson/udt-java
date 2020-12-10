@@ -475,15 +475,27 @@ public class UDTReceiver {
     }
 
     /**
-     * spec p. 13: <br/>
+     * spec p. 13:
+     * <ul>
+     * <li>
      * 1) Locate the related ACK in the ACK History Window according to the
-     * ACK sequence number in this ACK2.  <br/>
-     * 2) Update the largest ACK number ever been acknowledged. <br/>
+     * ACK sequence number in this ACK2.
+     * </li>
+     * <li>
+     * 2) Update the largest ACK number ever been acknowledged.
+     * </li>
+     * <li>
      * 3) Calculate new rtt according to the ACK2 arrival time and the ACK
      * departure time, and update the RTT value as: RTT = (RTT * 7 +
-     * rtt) / 8.  <br/>
-     * 4) Update RTTVar by: RTTVar = (RTTVar * 3 + abs(RTT - rtt)) / 4.  <br/>
-     * 5) Update both ACK and NAK period to 4 * RTT + RTTVar + SYN.  <br/>
+     * rtt) / 8.
+     * </li>
+     * <li>
+     * 4) Update RTTVar by: RTTVar = (RTTVar * 3 + abs(RTT - rtt)) / 4.
+     * </li>
+     * <li>
+     * 5) Update both ACK and NAK period to 4 * RTT + RTTVar + SYN.
+     * </li>
+     * </ul>
      */
     protected void onAck2PacketReceived(Acknowledgment2 ack2) {
         AckHistoryEntry entry = ackHistoryWindow.getEntry(ack2.getAckSequenceNumber());

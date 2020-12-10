@@ -5,10 +5,10 @@ import udt.packets.DataPacket;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Holds a fixed number of {@link DataPacket} instances which are sent out.<br/>
+ * Holds a fixed number of {@link DataPacket} instances which are sent out.
  * <p>
  * it is assumed that a single thread (the producer) stores new data,
- * and another single thread (the consumer) reads/removes data.<br/>
+ * and another single thread (the consumer) reads/removes data.
  *
  * @author schuller
  */

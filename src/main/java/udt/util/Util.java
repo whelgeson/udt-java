@@ -154,8 +154,6 @@ public class Util {
      * a dummy packet. A local port will be chosen automatically.
      *
      * @param client - client address
-     * @return the local port that can now be accessed by the client
-     * @throws IOException
      */
     public static void doHolePunch(UDPEndPoint endpoint, InetAddress client, int clientPort) throws IOException {
         DatagramPacket p = new DatagramPacket(new byte[1], 1);

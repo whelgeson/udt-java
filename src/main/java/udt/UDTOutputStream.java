@@ -78,7 +78,7 @@ public class UDTOutputStream extends OutputStream {
     /**
      * This method signals the UDT sender that it can pause the
      * sending thread. The UDT sender will resume when the next
-     * write() call is executed.<br/>
+     * write() call is executed.
      * For example, one can use this method on the receiving end
      * of a file transfer, to save some CPU time which would otherwise
      * be consumed by the sender thread.

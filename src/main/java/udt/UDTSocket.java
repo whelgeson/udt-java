@@ -56,10 +56,6 @@ public class UDTSocket {
     private UDTInputStream inputStream;
     private UDTOutputStream outputStream;
 
-    /**
-     * @param endpoint
-     * @throws SocketException,UnknownHostException
-     */
     public UDTSocket(UDPEndPoint endpoint, UDTSession session) throws SocketException, UnknownHostException {
         this.endpoint = endpoint;
         this.session = session;

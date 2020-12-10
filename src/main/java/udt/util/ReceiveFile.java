@@ -50,7 +50,7 @@ import java.text.NumberFormat;
  * the UDT reference implementation
  * <p>
  * main method USAGE:
- * java -cp ... udt.util.ReceiveFile <server_ip> <server_port> <remote_filename> <local_filename>
+ * java -cp ... udt.util.ReceiveFile &lt;server_ip&gt; &lt;server_port&gt; &lt;remote_filename&gt; &lt;local_filename&gt;
  */
 public class ReceiveFile extends Application {
 

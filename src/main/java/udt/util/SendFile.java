@@ -54,7 +54,7 @@ import java.util.logging.Logger;
  * Intended to be compatible with the C++ version in
  * the UDT reference implementation
  * <p>
- * main method USAGE: java -cp .. udt.util.SendFile <server_port>
+ * main method USAGE: java -cp .. udt.util.SendFile &lt;server_port&gt;
  */
 public class SendFile extends Application {
 

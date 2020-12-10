@@ -46,10 +46,10 @@ import java.net.InetAddress;
 
 /**
  * This commandline application is run on the target system to
- * send a remote file. <br/>
+ * send a remote file.
  * <p>
  * Performs UDP hole punching, waits for a client connect and
- * sends the specified file. <br/>
+ * sends the specified file.
  * <p>
  * usage: sendfile client_ip client_port local_filename [comm_file_name]
  */

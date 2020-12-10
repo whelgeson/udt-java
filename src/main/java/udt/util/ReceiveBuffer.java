@@ -64,10 +64,8 @@ public class ReceiveBuffer {
      * return a data chunk, guaranteed to be in-order, waiting up to the
      * specified wait time if necessary for a chunk to become available.
      *
-     * @param timeout how long to wait before giving up, in units of
-     *                <tt>unit</tt>
-     * @return data chunk, or <tt>null</tt> if the
-     * specified waiting time elapses before an element is available
+     * @param timeout how long to wait before giving up, in units of {@code units}
+     * @return data chunk, or {@code null} if the specified waiting time elapses before an element is available
      * @throws InterruptedException if interrupted while waiting
      */
     public AppData poll(int timeout, TimeUnit units) throws InterruptedException {

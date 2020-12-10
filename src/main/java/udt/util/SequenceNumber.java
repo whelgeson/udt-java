@@ -4,7 +4,7 @@ import java.util.Random;
 
 
 /**
- * Handle sequence numbers, taking the range of 0 - (2^31 - 1) into account<br/>
+ * Handle sequence numbers, taking the range of 0 - (2^31 - 1) into account
  */
 
 public class SequenceNumber {

@@ -1,22 +1,22 @@
 /*********************************************************************************
  * Copyright (c) 2010 Forschungszentrum Juelich GmbH 
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * (1) Redistributions of source code must retain the above copyright notice,
  * this list of conditions and the disclaimer at the end. Redistributions in
  * binary form must reproduce the above copyright notice, this list of
  * conditions and the following disclaimer in the documentation and/or other
  * materials provided with the distribution.
- * 
+ *
  * (2) Neither the name of Forschungszentrum Juelich GmbH nor the names of its 
  * contributors may be used to endorse or promote products derived from this 
  * software without specific prior written permission.
- * 
+ *
  * DISCLAIMER
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -37,19 +37,19 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class UDTThreadFactory implements ThreadFactory {
 
-	private static final AtomicInteger num=new AtomicInteger(0);
-	
-	private static UDTThreadFactory theInstance=null;
-	
-	public static synchronized UDTThreadFactory get(){
-		if(theInstance==null)theInstance=new UDTThreadFactory();
-		return theInstance;
-	}
-	
-	public Thread newThread(Runnable r) {
-		Thread t=new Thread(r);
-		t.setName("UDT-Thread-"+num.incrementAndGet());
-		return t;
-	}
+    private static final AtomicInteger num = new AtomicInteger(0);
+
+    private static UDTThreadFactory theInstance = null;
+
+    public static synchronized UDTThreadFactory get() {
+        if (theInstance == null) theInstance = new UDTThreadFactory();
+        return theInstance;
+    }
+
+    public Thread newThread(Runnable r) {
+        Thread t = new Thread(r);
+        t.setName("UDT-Thread-" + num.incrementAndGet());
+        return t;
+    }
 
 }

@@ -1,22 +1,22 @@
 /*********************************************************************************
  * Copyright (c) 2010 Forschungszentrum Juelich GmbH 
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * (1) Redistributions of source code must retain the above copyright notice,
  * this list of conditions and the disclaimer at the end. Redistributions in
  * binary form must reproduce the above copyright notice, this list of
  * conditions and the following disclaimer in the documentation and/or other
  * materials provided with the distribution.
- * 
+ *
  * (2) Neither the name of Forschungszentrum Juelich GmbH nor the names of its 
  * contributors may be used to endorse or promote products derived from this 
  * software without specific prior written permission.
- * 
+ *
  * DISCLAIMER
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -32,38 +32,39 @@
 
 package udt;
 
-public interface UDTPacket extends Comparable<UDTPacket>{
+public interface UDTPacket extends Comparable<UDTPacket> {
 
 
-	public long getMessageNumber();
-	
-	public void setMessageNumber(long messageNumber) ;
-	
-	public void setTimeStamp(long timeStamp);
-	
-	public long getTimeStamp();
-	
-	public void setDestinationID(long destinationID);
-	
-	public long getDestinationID();
-	
-	public boolean isControlPacket();
-	
-	public int getControlPacketType();
+    long getMessageNumber();
 
-	public byte[] getEncoded();
-	
-	/**
-	 * return <code>true</code> if this packet should be routed to
-	 * the {@link UDTSender} 
-	 * @return
-	 */
-	public boolean forSender();
-	
-	public boolean isConnectionHandshake();
-	
-	public UDTSession getSession();
+    void setMessageNumber(long messageNumber);
 
-	public long getPacketSequenceNumber();
-	
+    long getTimeStamp();
+
+    void setTimeStamp(long timeStamp);
+
+    long getDestinationID();
+
+    void setDestinationID(long destinationID);
+
+    boolean isControlPacket();
+
+    int getControlPacketType();
+
+    byte[] getEncoded();
+
+    /**
+     * return <code>true</code> if this packet should be routed to
+     * the {@link UDTSender}
+     *
+     * @return
+     */
+    boolean forSender();
+
+    boolean isConnectionHandshake();
+
+    UDTSession getSession();
+
+    long getPacketSequenceNumber();
+
 }

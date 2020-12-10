@@ -53,7 +53,7 @@ public class CircularArray<T> {
      */
     public CircularArray(int size) {
         max = size;
-        circularArray = new ArrayList<T>(size);
+        circularArray = new ArrayList<>(size);
     }
 
     /**

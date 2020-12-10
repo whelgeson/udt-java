@@ -1,11 +1,11 @@
 package udt;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import udt.util.UDTStatistics;
 import udt.util.Util;
 
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * default UDT congestion control.<br/>
@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  */
 public class UDTCongestionControl implements CongestionControl {
 
-    private static final Logger logger = Logger.getLogger(UDTCongestionControl.class.getName());
+    private static final Logger log = LogManager.getLogger();
 
     protected final UDTSession session;
 
@@ -139,9 +139,7 @@ public class UDTCongestionControl implements CongestionControl {
             //to the product of packet arrival rate and(rtt +SYN)
             double A = packetArrivalRate / 1000000.0 * (roundTripTime + Util.getSYNTimeD());
             congestionWindowSize = (long) A + 16;
-            if (logger.isLoggable(Level.FINER)) {
-                logger.finer("receive rate " + packetArrivalRate + " rtt " + roundTripTime + " set to window size: " + (A + 16));
-            }
+            log.debug("receive rate " + packetArrivalRate + " rtt " + roundTripTime + " set to window size: " + (A + 16));
         }
 
         //no rate increase during slow start
@@ -174,7 +172,7 @@ public class UDTCongestionControl implements CongestionControl {
         } else {
             double exp = Math.ceil(Math.log10(remaining * PS * 8));
             double power10 = Math.pow(10.0, exp) * BetaDivPS;
-            return Math.max(power10, 1 / PS);
+            return Math.max(power10, 1.0 / PS);
         }
     }
 
@@ -224,7 +222,6 @@ public class UDTCongestionControl implements CongestionControl {
         }
 
         statistics.setSendPeriod(packetSendingPeriod);
-        return;
     }
 
     /* (non-Javadoc)

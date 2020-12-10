@@ -32,6 +32,8 @@
 
 package udt;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import udt.packets.*;
 import udt.packets.Shutdown;
 import udt.packets.ControlPacket.ControlPacketType;
@@ -43,8 +45,6 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * receiver part of a UDT entity
@@ -53,7 +53,7 @@ import java.util.logging.Logger;
  */
 public class UDTReceiver {
 
-    private static final Logger logger = Logger.getLogger(UDTReceiver.class.getName());
+    private static final Logger log = LogManager.getLogger();
     /**
      * if set to true connections will not expire, but will only be
      * closed by a Shutdown message
@@ -164,21 +164,19 @@ public class UDTReceiver {
 
     //starts the sender algorithm
     private void start() {
-        Runnable r = new Runnable() {
-            public void run() {
-                try {
-                    nextACK = Util.getCurrentTime() + ackTimerInterval;
-                    nextNAK = (long) (Util.getCurrentTime() + 1.5 * nakTimerInterval);
-                    nextEXP = Util.getCurrentTime() + 2 * expTimerInterval;
-                    ackInterval = session.getCongestionControl().getAckInterval();
-                    while (!stopped) {
-                        receiverAlgorithm();
-                    }
-                } catch (Exception ex) {
-                    logger.log(Level.SEVERE, "", ex);
+        Runnable r = () -> {
+            try {
+                nextACK = Util.getCurrentTime() + ackTimerInterval;
+                nextNAK = (long) (Util.getCurrentTime() + 1.5 * nakTimerInterval);
+                nextEXP = Util.getCurrentTime() + 2 * expTimerInterval;
+                ackInterval = session.getCongestionControl().getAckInterval();
+                while (!stopped) {
+                    receiverAlgorithm();
                 }
-                logger.info("STOPPING RECEIVER for " + session);
+            } catch (Exception ex) {
+                log.error("", ex);
             }
+            log.info("STOPPING RECEIVER for " + session);
         };
         receiverThread = UDTThreadFactory.get().newThread(r);
         String s = (session instanceof ServerSession) ? "ServerSession" : "ClientSession";
@@ -308,7 +306,7 @@ public class UDTReceiver {
             if (!connectionExpiryDisabled && !stopped) {
                 sendShutdown();
                 stop();
-                logger.info("Session " + session + " expired.");
+                log.info("Session " + session + " expired.");
                 return;
             }
         }
@@ -542,10 +540,6 @@ public class UDTReceiver {
     }
 
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("UDTReceiver ").append(session).append("\n");
-        sb.append("LossList: " + receiverLossList);
-        return sb.toString();
+        return "UDTReceiver " + session + "\n" + "LossList: " + receiverLossList;
     }
-
 }

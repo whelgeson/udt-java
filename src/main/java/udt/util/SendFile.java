@@ -71,7 +71,6 @@ public class SendFile extends Application {
     /**
      * main() method for invoking as a commandline application
      *
-     * @param args
      * @throws Exception
      */
     public static void main(String[] fullArgs) throws Exception {

@@ -139,8 +139,6 @@ public class Acknowledgement extends ControlPacket {
 
     /**
      * set the variance of the round trip time (in microseconds)
-     *
-     * @param RoundTripTime
      */
     public void setRoundTripTimeVar(long roundTripTimeVar) {
         roundTripTimeVariance = roundTripTimeVar;

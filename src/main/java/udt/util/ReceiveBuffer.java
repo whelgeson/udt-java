@@ -66,8 +66,6 @@ public class ReceiveBuffer {
      *
      * @param timeout how long to wait before giving up, in units of
      *                <tt>unit</tt>
-     * @param unit    a <tt>TimeUnit</tt> determining how to interpret the
-     *                <tt>timeout</tt> parameter
      * @return data chunk, or <tt>null</tt> if the
      * specified waiting time elapses before an element is available
      * @throws InterruptedException if interrupted while waiting

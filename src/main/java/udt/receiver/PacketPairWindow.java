@@ -38,7 +38,7 @@ import udt.util.CircularArray;
  * a circular array that records time intervals between two probing data packets.
  * It is used to determine the estimated link capacity.
  *
- * @see {@link CircularArray}
+ * @see CircularArray
  */
 public class PacketPairWindow extends CircularArray<Long> {
 
@@ -70,7 +70,7 @@ public class PacketPairWindow extends CircularArray<Long> {
         double upper = median * 8;
         double lower = median / 8;
         double total = 0;
-        double val = 0;
+        double val;
         int count = 0;
         for (int i = 0; i < num; i++) {
             val = circularArray.get(i).doubleValue();
@@ -79,8 +79,7 @@ public class PacketPairWindow extends CircularArray<Long> {
                 count++;
             }
         }
-        double res = total / count;
-        return res;
+        return total / count;
     }
 
     /**
@@ -90,7 +89,6 @@ public class PacketPairWindow extends CircularArray<Long> {
      * @return number of packets per second
      */
     public long getEstimatedLinkCapacity() {
-        long res = (long) Math.ceil(1000000 / computeMedianTimeInterval());
-        return res;
+        return (long) Math.ceil(1000000 / computeMedianTimeInterval());
     }
 }

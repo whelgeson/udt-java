@@ -45,7 +45,7 @@ public class SenderLossList {
      * create a new sender lost list
      */
     public SenderLossList() {
-        backingList = new LinkedList<Long>();
+        backingList = new LinkedList<>();
     }
 
     public void insert(Long obj) {

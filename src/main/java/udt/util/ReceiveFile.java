@@ -69,7 +69,7 @@ public class ReceiveFile extends Application {
         format.setMaximumFractionDigits(3);
     }
 
-    public static void main(String[] fullArgs) throws Exception {
+    public static void main(String[] fullArgs) {
         int serverPort = 65321;
         String serverHost = "localhost";
         String remoteFile = "";
@@ -132,7 +132,7 @@ public class ReceiveFile extends Application {
             }
             long size = decode(sizeInfo, 0);
 
-            Boolean devNull = Boolean.getBoolean("udt.dev.null");
+            boolean devNull = Boolean.getBoolean("udt.dev.null");
             if (devNull) {
                 while (true) Thread.sleep(10000);
             }
@@ -140,8 +140,8 @@ public class ReceiveFile extends Application {
             File file = new File(localFile);
             System.out.println("[ReceiveFile] Write to local file <" + file.getAbsolutePath() + ">");
             FileOutputStream fos = new FileOutputStream(file);
-            OutputStream os = new BufferedOutputStream(fos, 1024 * 1024);
-            try {
+            try (fos) {
+                OutputStream os = new BufferedOutputStream(fos, 1024 * 1024);
                 System.out.println("[ReceiveFile] Reading <" + size + "> bytes.");
                 long start = System.currentTimeMillis();
                 //and read the file data
@@ -155,8 +155,6 @@ public class ReceiveFile extends Application {
 
                 if (verbose) System.out.println(client.getStatistics());
 
-            } finally {
-                fos.close();
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);

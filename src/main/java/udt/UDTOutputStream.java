@@ -71,8 +71,7 @@ public class UDTOutputStream extends OutputStream {
             checkClosed();
             socket.flush();
         } catch (InterruptedException ie) {
-            IOException io = new IOException(ie);
-            throw io;
+            throw new IOException(ie);
         }
     }
 
@@ -84,7 +83,7 @@ public class UDTOutputStream extends OutputStream {
      * of a file transfer, to save some CPU time which would otherwise
      * be consumed by the sender thread.
      */
-    public void pauseOutput() throws IOException {
+    public void pauseOutput() {
         socket.getSender().pause();
     }
 

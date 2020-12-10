@@ -60,7 +60,7 @@ public class FufexReceive implements Runnable {
         this.commOut = commOut;
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         if (args.length < 3) usage();
 
         String serverIP = args[0];
@@ -104,11 +104,8 @@ public class FufexReceive implements Runnable {
             long size = ByteBuffer.wrap(sizeInfo).getInt();
 
             //now read file data
-            FileOutputStream fos = new FileOutputStream(localFile, append);
-            try {
+            try (FileOutputStream fos = new FileOutputStream(localFile, append)) {
                 Util.copy(in, fos, size, false);
-            } finally {
-                fos.close();
             }
 
 
@@ -151,12 +148,9 @@ public class FufexReceive implements Runnable {
      */
     private void appendToFile(String name, String line) throws IOException {
         File f = new File(name);
-        FileOutputStream fos = new FileOutputStream(f, true);
-        try {
+        try (FileOutputStream fos = new FileOutputStream(f, true)) {
             fos.write(line.getBytes());
             fos.write('\n');
-        } finally {
-            fos.close();
         }
     }
 }

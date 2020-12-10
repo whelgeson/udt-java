@@ -57,8 +57,6 @@ public class UDTSocket {
     private UDTOutputStream outputStream;
 
     /**
-     * @param host
-     * @param port
      * @param endpoint
      * @throws SocketException,UnknownHostException
      */
@@ -160,10 +158,9 @@ public class UDTSocket {
      * @param length
      * @param timeout
      * @param units
-     * @throws IOException          - if data cannot be sent
      * @throws InterruptedException
      */
-    protected void doWrite(byte[] data, int offset, int length, int timeout, TimeUnit units) throws IOException, InterruptedException {
+    protected void doWrite(byte[] data, int offset, int length, int timeout, TimeUnit units) throws InterruptedException {
         ByteBuffer bb = ByteBuffer.wrap(data, offset, length);
         while (bb.remaining() > 0) {
             try {

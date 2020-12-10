@@ -14,7 +14,7 @@ public abstract class Application implements Runnable {
     protected static int localPort = -1;
 
     protected static String[] parseOptions(String[] args) {
-        List<String> newArgs = new ArrayList<String>();
+        List<String> newArgs = new ArrayList<>();
         for (String arg : args) {
             if (arg.startsWith("-")) {
                 parseArg(arg);
@@ -22,7 +22,7 @@ public abstract class Application implements Runnable {
                 newArgs.add(arg);
             }
         }
-        return newArgs.toArray(new String[newArgs.size()]);
+        return newArgs.toArray(new String[0]);
     }
 
     protected static void parseArg(String arg) {
@@ -39,11 +39,10 @@ public abstract class Application implements Runnable {
     }
 
     static long decode(byte[] data, int start) {
-        long result = (data[start + 3] & 0xFF) << 24
-                              | (data[start + 2] & 0xFF) << 16
-                              | (data[start + 1] & 0xFF) << 8
-                              | (data[start] & 0xFF);
-        return result;
+        return (long) (data[start + 3] & 0xFF) << 24
+                       | (data[start + 2] & 0xFF) << 16
+                       | (data[start + 1] & 0xFF) << 8
+                       | (data[start] & 0xFF);
     }
 
     static byte[] encode(long value) {

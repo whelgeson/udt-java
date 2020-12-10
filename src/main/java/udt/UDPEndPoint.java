@@ -32,6 +32,8 @@
 
 package udt;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import udt.packets.ConnectionHandshake;
 import udt.packets.Destination;
 import udt.packets.PacketFactory;
@@ -44,8 +46,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * the UDPEndpoint takes care of sending and receiving UDP network packets,
@@ -54,15 +54,15 @@ import java.util.logging.Logger;
 public class UDPEndPoint {
 
     public static final int DATAGRAM_SIZE = 1400;
-    private static final Logger logger = Logger.getLogger(ClientSession.class.getName());
+    private static final Logger log = LogManager.getLogger();
     final DatagramPacket dp = new DatagramPacket(new byte[DATAGRAM_SIZE], DATAGRAM_SIZE);
     private final int port;
     private final DatagramSocket dgSocket;
     //active sessions keyed by socket ID
-    private final Map<Long, UDTSession> sessions = new ConcurrentHashMap<Long, UDTSession>();
+    private final Map<Long, UDTSession> sessions = new ConcurrentHashMap<>();
     //if the endpoint is configured for a server socket,
     //this queue is used to handoff new UDTSessions to the application
-    private final SynchronousQueue<UDTSession> sessionHandoff = new SynchronousQueue<UDTSession>();
+    private final SynchronousQueue<UDTSession> sessionHandoff = new SynchronousQueue<>();
     private final Object lock = new Object();
     //last received packet
     private UDTPacket lastPacket;
@@ -76,8 +76,6 @@ public class UDPEndPoint {
      * <li>Converts them to UDT packets</li>
      * <li>dispatches the UDT packets according to their destination ID.</li>
      * </ul>
-     *
-     * @throws IOException
      */
     private long lastDestID = -1;
     private UDTSession lastSession;
@@ -168,7 +166,7 @@ public class UDPEndPoint {
                 try {
                     doReceive();
                 } catch (Exception ex) {
-                    logger.log(Level.WARNING, "", ex);
+                    log.warn("", ex);
                 }
             }
         };
@@ -176,7 +174,7 @@ public class UDPEndPoint {
         t.setName("UDPEndpoint-" + t.getName());
         t.setDaemon(true);
         t.start();
-        logger.info("UDTEndpoint started.");
+        log.info("UDTEndpoint started.");
     }
 
     public void start() {
@@ -211,7 +209,7 @@ public class UDPEndPoint {
     }
 
     public void addSession(Long destinationID, UDTSession session) {
-        logger.info("Storing session <" + destinationID + ">");
+        log.info("Storing session <" + destinationID + ">");
         sessions.put(destinationID, session);
     }
 
@@ -235,7 +233,7 @@ public class UDPEndPoint {
         return sessionHandoff.poll(timeout, unit);
     }
 
-    protected void doReceive() throws IOException {
+    protected void doReceive() {
         while (!stopped) {
             try {
                 try {
@@ -258,9 +256,9 @@ public class UDPEndPoint {
                                 addSession(session.getSocketID(), session);
                                 //TODO need to check peer to avoid duplicate server session
                                 if (serverSocketMode) {
-                                    logger.fine("Pooling new request.");
+                                    log.debug("Pooling new request.");
                                     sessionHandoff.put(session);
-                                    logger.fine("Request taken for processing.");
+                                    log.debug("Request taken for processing.");
                                 }
                             }
                             peer.setSocketID(((ConnectionHandshake) packet).getSocketID());
@@ -280,20 +278,20 @@ public class UDPEndPoint {
                         if (session == null) {
                             n++;
                             if (n % 100 == 1) {
-                                logger.warning("Unknown session <" + dest + "> requested from <" + peer + "> packet type " + packet.getClass().getName());
+                                log.warn("Unknown session <" + dest + "> requested from <" + peer + "> packet type " + packet.getClass().getName());
                             }
                         } else {
                             session.received(packet, peer);
                         }
                     }
                 } catch (SocketException ex) {
-                    logger.log(Level.INFO, "SocketException: " + ex.getMessage());
+                    log.error("SocketException: ", ex);
                 } catch (SocketTimeoutException ste) {
                     //can safely ignore... we will retry until the endpoint is stopped
                 }
 
             } catch (Exception ex) {
-                logger.log(Level.WARNING, "Got: " + ex.getMessage(), ex);
+                log.warn("Got: " + ex.getMessage(), ex);
             }
         }
     }

@@ -32,15 +32,14 @@
 
 package udt;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import udt.packets.ConnectionHandshake;
 import udt.packets.Destination;
 import udt.packets.Shutdown;
 import udt.util.SequenceNumber;
 
 import java.io.IOException;
-import java.net.SocketException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Client side of a client-server UDT connection.
@@ -48,14 +47,14 @@ import java.util.logging.Logger;
  */
 public class ClientSession extends UDTSession {
 
-    private static final Logger logger = Logger.getLogger(ClientSession.class.getName());
+    private static final Logger log = LogManager.getLogger();
 
     private final UDPEndPoint endPoint;
 
-    public ClientSession(UDPEndPoint endPoint, Destination dest) throws SocketException {
+    public ClientSession(UDPEndPoint endPoint, Destination dest) {
         super("ClientSession localPort=" + endPoint.getLocalPort(), dest);
         this.endPoint = endPoint;
-        logger.info("Created " + toString());
+        log.info("Created " + toString());
     }
 
     /**
@@ -75,7 +74,7 @@ public class ClientSession extends UDTSession {
             if (getState() != ready) Thread.sleep(500);
         }
         cc.init();
-        logger.info("Connected, " + n + " handshake packets sent");
+        log.info("Connected, " + n + " handshake packets sent");
     }
 
     @Override
@@ -86,7 +85,7 @@ public class ClientSession extends UDTSession {
         if (packet instanceof ConnectionHandshake) {
             ConnectionHandshake hs = (ConnectionHandshake) packet;
 
-            logger.info("Received connection handshake from " + peer + "\n" + hs);
+            log.info("Received connection handshake from " + peer + "\n" + hs);
 
             if (getState() != ready) {
                 if (hs.getConnectionType() == 1) {
@@ -96,10 +95,9 @@ public class ClientSession extends UDTSession {
                         destination.setSocketID(peerSocketID);
                         sendConfirmation(hs);
                     } catch (Exception ex) {
-                        logger.log(Level.WARNING, "Error creating socket", ex);
+                        log.warn("Error creating socket", ex);
                         setState(invalid);
                     }
-                    return;
                 } else {
                     try {
                         //TODO validate parameters sent by peer
@@ -108,11 +106,11 @@ public class ClientSession extends UDTSession {
                         setState(ready);
                         socket = new UDTSocket(endPoint, this);
                     } catch (Exception ex) {
-                        logger.log(Level.WARNING, "Error creating socket", ex);
+                        log.warn("Error creating socket", ex);
                         setState(invalid);
                     }
-                    return;
                 }
+                return;
             }
         }
 
@@ -121,7 +119,7 @@ public class ClientSession extends UDTSession {
             if (packet instanceof Shutdown) {
                 setState(shutdown);
                 active = false;
-                logger.info("Connection shutdown initiated by the other side.");
+                log.info("Connection shutdown initiated by the other side.");
                 return;
             }
             active = true;
@@ -133,10 +131,9 @@ public class ClientSession extends UDTSession {
                 }
             } catch (Exception ex) {
                 //session is invalid
-                logger.log(Level.SEVERE, "Error in " + toString(), ex);
+                log.error("Error in " + toString(), ex);
                 setState(invalid);
             }
-            return;
         }
     }
 
@@ -153,7 +150,7 @@ public class ClientSession extends UDTSession {
         handshake.setSocketID(mySocketID);
         handshake.setMaxFlowWndSize(flowWindowSize);
         handshake.setSession(this);
-        logger.info("Sending " + handshake);
+        log.info("Sending " + handshake);
         endPoint.doSend(handshake);
     }
 
@@ -167,14 +164,11 @@ public class ClientSession extends UDTSession {
         handshake.setSocketID(mySocketID);
         handshake.setMaxFlowWndSize(flowWindowSize);
         handshake.setSession(this);
-        logger.info("Sending confirmation " + handshake);
+        log.info("Sending confirmation " + handshake);
         endPoint.doSend(handshake);
     }
-
 
     public UDTPacket getLastPkt() {
         return lastPacket;
     }
-
-
 }

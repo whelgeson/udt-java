@@ -32,15 +32,17 @@
 
 package udt;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 
 public class UDTServerSocket {
-    private static final Logger logger = Logger.getLogger(UDTClient.class.getName());
+    private static final Logger log = LogManager.getLogger();
 
     private final UDPEndPoint endpoint;
 
@@ -56,7 +58,7 @@ public class UDTServerSocket {
      */
     public UDTServerSocket(InetAddress localAddress, int port) throws SocketException, UnknownHostException {
         endpoint = new UDPEndPoint(localAddress, port);
-        logger.info("Created server endpoint on port " + endpoint.getLocalPort());
+        log.info("Created server endpoint on port " + endpoint.getLocalPort());
     }
 
     //starts a server on localhost

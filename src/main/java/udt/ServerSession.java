@@ -32,6 +32,8 @@
 
 package udt;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import udt.packets.ConnectionHandshake;
 import udt.packets.Destination;
 import udt.packets.KeepAlive;
@@ -40,26 +42,23 @@ import udt.packets.Shutdown;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * server side session in client-server mode
  */
 public class ServerSession extends UDTSession {
 
-    private static final Logger logger = Logger.getLogger(ServerSession.class.getName());
+    private static final Logger log = LogManager.getLogger();
 
     private final UDPEndPoint endPoint;
     int n_handshake = 0;
     //last received packet (for testing purposes)
     private UDTPacket lastPacket;
 
-    public ServerSession(DatagramPacket dp, UDPEndPoint endPoint) throws SocketException, UnknownHostException {
+    public ServerSession(DatagramPacket dp, UDPEndPoint endPoint) throws SocketException {
         super("ServerSession localPort=" + endPoint.getLocalPort() + " peer=" + dp.getAddress() + ":" + dp.getPort(), new Destination(dp.getAddress(), dp.getPort()));
         this.endPoint = endPoint;
-        logger.info("Created " + toString() + " talking to " + dp.getAddress() + ":" + dp.getPort());
+        log.info("Created " + toString() + " talking to " + dp.getAddress() + ":" + dp.getPort());
     }
 
     @Override
@@ -68,7 +67,7 @@ public class ServerSession extends UDTSession {
 
         if (packet instanceof ConnectionHandshake) {
             ConnectionHandshake connectionHandshake = (ConnectionHandshake) packet;
-            logger.info("Received " + connectionHandshake);
+            log.info("Received " + connectionHandshake);
 
             if (getState() <= ready) {
                 destination.setSocketID(connectionHandshake.getSocketID());
@@ -85,12 +84,12 @@ public class ServerSession extends UDTSession {
                         cc.init();
                     } catch (Exception uhe) {
                         //session is invalid
-                        logger.log(Level.SEVERE, "", uhe);
+                        log.error("", uhe);
                         setState(invalid);
                     }
                 } catch (IOException ex) {
                     //session invalid
-                    logger.log(Level.WARNING, "Error processing ConnectionHandshake", ex);
+                    log.warn("Error processing ConnectionHandshake", ex);
                     setState(invalid);
                 }
                 return;
@@ -105,20 +104,16 @@ public class ServerSession extends UDTSession {
         if (getState() == ready) {
             active = true;
 
-            if (packet instanceof KeepAlive) {
-                //nothing to do here
-                return;
-            } else if (packet instanceof Shutdown) {
+            if (packet instanceof Shutdown) {
                 try {
                     socket.getReceiver().stop();
                 } catch (IOException ex) {
-                    logger.log(Level.WARNING, "", ex);
+                    log.warn("", ex);
                 }
                 setState(shutdown);
                 System.out.println("SHUTDOWN ***");
                 active = false;
-                logger.info("Connection shutdown initiated by the other side.");
-                return;
+                log.info("Connection shutdown initiated by the other side.");
             } else {
                 try {
                     if (packet.forSender()) {
@@ -128,15 +123,11 @@ public class ServerSession extends UDTSession {
                     }
                 } catch (Exception ex) {
                     //session invalid
-                    logger.log(Level.SEVERE, "", ex);
+                    log.error("", ex);
                     setState(invalid);
                 }
             }
-            return;
-
         }
-
-
     }
 
     /**
@@ -154,7 +145,6 @@ public class ServerSession extends UDTSession {
      * </ul>
      *
      * @param handshake
-     * @param peer
      * @throws IOException
      */
     protected void handleHandShake(ConnectionHandshake handshake) throws IOException {
@@ -175,7 +165,7 @@ public class ServerSession extends UDTSession {
         responseHandshake.setSocketID(mySocketID);
         responseHandshake.setDestinationID(this.getDestination().getSocketID());
         responseHandshake.setSession(this);
-        logger.info("Sending reply " + responseHandshake);
+        log.info("Sending reply " + responseHandshake);
         endPoint.doSend(responseHandshake);
     }
 

@@ -73,7 +73,7 @@ public class FufexSend {
         System.exit(1);
     }
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         if (args.length < 3) usage();
 
         String commFileName = null;
@@ -104,8 +104,7 @@ public class FufexSend {
             UDTSocket socket = server.accept();
             UDTOutputStream out = socket.getOutputStream();
             File file = new File(localFilename);
-            FileInputStream fis = new FileInputStream(file);
-            try {
+            try (FileInputStream fis = new FileInputStream(file)) {
                 //send file size info
                 long size = file.length();
                 PacketUtil.encode(size);
@@ -115,11 +114,9 @@ public class FufexSend {
                 Util.copy(fis, out, size, true);
                 long end = System.currentTimeMillis();
                 System.out.println(socket.getSession().getStatistics());
-                float mbRate = 1000 * size / 1024 / 1024 / (end - start);
+                float mbRate = 1000 * size * 1f / 1024 / 1024 / (end - start);
                 float mbitRate = 8 * mbRate;
                 System.out.println("Rate: " + (int) mbRate + " MBytes/sec. " + mbitRate + " mbit/sec.");
-            } finally {
-                fis.close();
             }
         } catch (Exception ex) {
             throw new RuntimeException(ex);
@@ -142,12 +139,9 @@ public class FufexSend {
      */
     private void appendToFile(String name, String line) throws IOException {
         File f = new File(name);
-        FileOutputStream fos = new FileOutputStream(f, true);
-        try {
+        try (FileOutputStream fos = new FileOutputStream(f, true)) {
             fos.write(line.getBytes());
             fos.write('\n');
-        } finally {
-            fos.close();
         }
     }
 

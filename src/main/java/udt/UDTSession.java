@@ -32,14 +32,14 @@
 
 package udt;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import udt.packets.Destination;
 import udt.util.UDTStatistics;
 
 import java.net.DatagramPacket;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public abstract class UDTSession {
 
@@ -57,7 +57,7 @@ public abstract class UDTSession {
      * @see CongestionControl
      */
     public static final String CC_CLASS = "udt.congestioncontrol.class";
-    private static final Logger logger = Logger.getLogger(UDTSession.class.getName());
+    private static final Logger log = LogManager.getLogger();
     private final static AtomicLong nextSocketID = new AtomicLong(20 + new Random().nextInt(5000));
     protected final UDTStatistics statistics;
     protected final CongestionControl cc;
@@ -96,21 +96,19 @@ public abstract class UDTSession {
         this.destination = destination;
         this.dgPacket = new DatagramPacket(new byte[0], 0, destination.getAddress(), destination.getPort());
         String clazzP = System.getProperty(CC_CLASS, UDTCongestionControl.class.getName());
-        Object ccObject = null;
+        Object ccObject;
         try {
             Class<?> clazz = Class.forName(clazzP);
             ccObject = clazz.getDeclaredConstructor(UDTSession.class).newInstance(this);
         } catch (Exception e) {
-            logger.log(Level.WARNING, "Can't setup congestion control class <" + clazzP + ">, using default.", e);
+            log.warn("Can't setup congestion control class <" + clazzP + ">, using default.", e);
             ccObject = new UDTCongestionControl(this);
         }
         cc = (CongestionControl) ccObject;
-        logger.info("Using " + cc.getClass().getName());
+        log.info("Using " + cc.getClass().getName());
     }
 
-
     public abstract void received(UDTPacket packet, Destination peer);
-
 
     public UDTSocket getSocket() {
         return socket;
@@ -129,7 +127,7 @@ public abstract class UDTSession {
     }
 
     public void setState(int state) {
-        logger.info(toString() + " connection state CHANGED to <" + state + ">");
+        log.info(toString() + " connection state CHANGED to <" + state + ">");
         this.state = state;
     }
 
@@ -142,7 +140,7 @@ public abstract class UDTSession {
     }
 
     public boolean isActive() {
-        return active == true;
+        return active;
     }
 
     public void setActive(boolean active) {
@@ -192,7 +190,7 @@ public abstract class UDTSession {
 
     public synchronized long getInitialSequenceNumber() {
         if (initialSequenceNumber == null) {
-            initialSequenceNumber = 1l; //TODO must be random?
+            initialSequenceNumber = 1L; //TODO must be random?
         }
         return initialSequenceNumber;
     }
@@ -206,12 +204,10 @@ public abstract class UDTSession {
     }
 
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(super.toString());
-        sb.append(" [");
-        sb.append("socketID=").append(this.mySocketID);
-        sb.append(" ]");
-        return sb.toString();
+        return super.toString() +
+                       " [" +
+                       "socketID=" + this.mySocketID +
+                       " ]";
     }
 
 }

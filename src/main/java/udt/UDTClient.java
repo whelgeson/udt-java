@@ -32,6 +32,8 @@
 
 package udt;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import udt.packets.Destination;
 import udt.packets.Shutdown;
 import udt.util.UDTStatistics;
@@ -41,15 +43,12 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeoutException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class UDTClient {
 
-    private static final Logger logger = Logger.getLogger(UDTClient.class.getName());
+    private static final Logger logger = LogManager.getLogger();
     private final UDPEndPoint clientEndpoint;
     private ClientSession clientSession;
-
 
     public UDTClient(InetAddress address, int localport) throws SocketException, UnknownHostException {
         //create endpoint
@@ -119,7 +118,6 @@ public class UDTClient {
     /**
      * flush outstanding data, with the specified maximum waiting time
      *
-     * @param timeOut - timeout in millis (if smaller than 0, no timeout is used)
      * @throws IOException
      * @throws InterruptedException
      */
@@ -129,14 +127,14 @@ public class UDTClient {
 
     public void shutdown() throws IOException {
 
-        if (clientSession.isReady() && clientSession.active == true) {
+        if (clientSession.isReady() && clientSession.active) {
             Shutdown shutdown = new Shutdown();
             shutdown.setDestinationID(clientSession.getDestination().getSocketID());
             shutdown.setSession(clientSession);
             try {
                 clientEndpoint.doSend(shutdown);
             } catch (IOException e) {
-                logger.log(Level.SEVERE, "ERROR: Connection could not be stopped!", e);
+                logger.error("ERROR: Connection could not be stopped!", e);
             }
             clientSession.getSocket().getReceiver().stop();
             clientEndpoint.stop();
@@ -147,16 +145,15 @@ public class UDTClient {
         return clientSession.getSocket().getInputStream();
     }
 
-    public UDTOutputStream getOutputStream() throws IOException {
+    public UDTOutputStream getOutputStream() {
         return clientSession.getSocket().getOutputStream();
     }
 
-    public UDPEndPoint getEndpoint() throws IOException {
+    public UDPEndPoint getEndpoint() {
         return clientEndpoint;
     }
 
     public UDTStatistics getStatistics() {
         return clientSession.getStatistics();
     }
-
 }

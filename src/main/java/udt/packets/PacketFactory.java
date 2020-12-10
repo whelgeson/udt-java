@@ -41,7 +41,6 @@ public class PacketFactory {
      * creates a Control or Data packet depending on the highest bit
      * of the first 32 bit of data
      *
-     * @param packetData
      * @return
      */
     public static UDTPacket createPacket(byte[] encodedData) {
@@ -59,7 +58,6 @@ public class PacketFactory {
     /**
      * create the right type of control packet based on the packet data
      *
-     * @param packetData
      * @return
      */
     public static ControlPacket createControlPacket(byte[] encodedData, int length) {

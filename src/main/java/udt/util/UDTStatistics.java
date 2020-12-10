@@ -252,16 +252,13 @@ public class UDTStatistics {
      * @param toFile
      */
     public void writeParameterHistory(File toFile) throws IOException {
-        FileWriter fos = new FileWriter(toFile);
-        try {
+        try (FileWriter fos = new FileWriter(toFile)) {
             synchronized (statsHistory) {
                 for (StatisticsHistoryEntry s : statsHistory) {
                     fos.write(s.toString());
                     fos.write('\n');
                 }
             }
-        } finally {
-            fos.close();
         }
     }
 

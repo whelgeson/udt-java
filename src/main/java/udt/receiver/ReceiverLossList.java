@@ -50,7 +50,7 @@ public class ReceiverLossList {
     private final PriorityBlockingQueue<ReceiverLossListEntry> backingList;
 
     public ReceiverLossList() {
-        backingList = new PriorityBlockingQueue<ReceiverLossListEntry>(32);
+        backingList = new PriorityBlockingQueue<>(32);
     }
 
     public void insert(ReceiverLossListEntry entry) {
@@ -95,7 +95,7 @@ public class ReceiverLossList {
      * @return
      */
     public List<Long> getFilteredSequenceNumbers(long RTT, boolean doFeedback) {
-        List<Long> result = new ArrayList<Long>();
+        List<Long> result = new ArrayList<>();
         ReceiverLossListEntry[] sorted = backingList.toArray(new ReceiverLossListEntry[0]);
         Arrays.sort(sorted);
         for (ReceiverLossListEntry e : sorted) {

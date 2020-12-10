@@ -119,8 +119,7 @@ public class UDTInputStream extends InputStream {
             return -1;
 
         } catch (Exception ex) {
-            IOException e = new IOException(ex);
-            throw e;
+            throw new IOException(ex);
         }
     }
 
@@ -129,26 +128,20 @@ public class UDTInputStream extends InputStream {
      * <p>
      * In blocking mode,this method will block until data is available or the socket is closed,
      * otherwise it will wait for at most 10 milliseconds.
-     *
-     * @throws InterruptedException
      */
     private void updateCurrentChunk(boolean block) throws IOException {
         if (currentChunk != null) return;
 
-        while (true) {
-            try {
-                if (block) {
-                    currentChunk = receiveBuffer.poll(1, TimeUnit.MILLISECONDS);
-                    while (!closed && currentChunk == null) {
-                        currentChunk = receiveBuffer.poll(1000, TimeUnit.MILLISECONDS);
-                    }
-                } else currentChunk = receiveBuffer.poll(10, TimeUnit.MILLISECONDS);
+        try {
+            if (block) {
+                currentChunk = receiveBuffer.poll(1, TimeUnit.MILLISECONDS);
+                while (!closed && currentChunk == null) {
+                    currentChunk = receiveBuffer.poll(1000, TimeUnit.MILLISECONDS);
+                }
+            } else currentChunk = receiveBuffer.poll(10, TimeUnit.MILLISECONDS);
 
-            } catch (InterruptedException ie) {
-                IOException ex = new IOException(ie);
-                throw ex;
-            }
-            return;
+        } catch (InterruptedException ie) {
+            throw new IOException(ie);
         }
     }
 
@@ -157,7 +150,7 @@ public class UDTInputStream extends InputStream {
      *
      * @param data
      */
-    protected boolean haveNewData(long sequenceNumber, byte[] data) throws IOException {
+    protected boolean haveNewData(long sequenceNumber, byte[] data) {
         return receiveBuffer.offer(new AppData(sequenceNumber, data));
     }
 
@@ -187,10 +180,8 @@ public class UDTInputStream extends InputStream {
 
     /**
      * notify the input stream that there is no more data
-     *
-     * @throws IOException
      */
-    protected void noMoreData() throws IOException {
+    protected void noMoreData() {
         expectMoreData.set(false);
     }
 

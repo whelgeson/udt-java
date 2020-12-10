@@ -49,6 +49,4 @@ public class Shutdown extends ControlPacket {
     public boolean forSender() {
         return false;
     }
-
 }
-

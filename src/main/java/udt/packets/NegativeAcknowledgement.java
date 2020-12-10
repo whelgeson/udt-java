@@ -66,7 +66,7 @@ public class NegativeAcknowledgement extends ControlPacket {
      * @param lossInfo
      */
     private List<Integer> decode(byte[] lossInfo) {
-        List<Integer> lostSequenceNumbers = new ArrayList<Integer>();
+        List<Integer> lostSequenceNumbers = new ArrayList<>();
         ByteBuffer bb = ByteBuffer.wrap(lossInfo);
         byte[] buffer = new byte[4];
         while (bb.remaining() > 0) {
@@ -132,7 +132,7 @@ public class NegativeAcknowledgement extends ControlPacket {
      * @param sequenceNumbers - a list of sequence numbers
      */
     public void addLossInfo(List<Long> sequenceNumbers) {
-        long start = 0;
+        long start;
         int index = 0;
         do {
             start = sequenceNumbers.get(index);
@@ -183,8 +183,8 @@ public class NegativeAcknowledgement extends ControlPacket {
             return false;
         NegativeAcknowledgement other = (NegativeAcknowledgement) obj;
 
-        List<Integer> thisLost = null;
-        List<Integer> otherLost = null;
+        List<Integer> thisLost;
+        List<Integer> otherLost;
 
         //compare the loss info
         if (lostSequenceNumbers != null) {

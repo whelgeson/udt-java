@@ -66,17 +66,15 @@ public class PacketUtil {
 
 
     public static long decode(byte[] data, int start) {
-        long result = (data[start] & 0xFF) << 24
-                              | (data[start + 1] & 0xFF) << 16
-                              | (data[start + 2] & 0xFF) << 8
-                              | (data[start + 3] & 0xFF);
-        return result;
+        return (long) (data[start] & 0xFF) << 24
+                       | (data[start + 1] & 0xFF) << 16
+                       | (data[start + 2] & 0xFF) << 8
+                       | (data[start + 3] & 0xFF);
     }
 
 
     public static int decodeType(byte[] data, int start) {
-        int result = data[start + 1] & 0xFF;
-        return result;
+        return data[start + 1] & 0xFF;
     }
 
 }

@@ -32,6 +32,8 @@
 
 package udt;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import udt.packets.*;
 import udt.sender.FlowWindow;
 import udt.sender.SenderLossList;
@@ -46,8 +48,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 
 /**
@@ -57,7 +57,7 @@ import java.util.logging.Logger;
  */
 public class UDTSender {
 
-    private static final Logger logger = Logger.getLogger(UDTClient.class.getName());
+    private static final Logger log = LogManager.getLogger();
 
     private final UDPEndPoint endpoint;
 
@@ -110,7 +110,7 @@ public class UDTSender {
         this.session = session;
         statistics = session.getStatistics();
         senderLossList = new SenderLossList();
-        sendBuffer = new ConcurrentHashMap<Long, byte[]>(session.getFlowWindowSize(), 0.75f, 2);
+        sendBuffer = new ConcurrentHashMap<>(session.getFlowWindowSize(), 0.75f, 2);
         chunksize = session.getDatagramSize() - 24;//need space for the header;
         flowWindow = new FlowWindow(session.getFlowWindowSize(), chunksize);
         lastAckSequenceNumber = session.getInitialSequenceNumber();
@@ -134,30 +134,28 @@ public class UDTSender {
      * start the sender thread
      */
     public void start() {
-        logger.info("Starting sender for " + session);
+        log.info("Starting sender for " + session);
         startLatch.countDown();
         started = true;
     }
 
     //starts the sender algorithm
     private void doStart() {
-        Runnable r = new Runnable() {
-            public void run() {
-                try {
-                    while (!stopped) {
-                        //wait until explicitely (re)started
-                        startLatch.await();
-                        paused = false;
-                        senderAlgorithm();
-                    }
-                } catch (InterruptedException ie) {
-                    ie.printStackTrace();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                    logger.log(Level.SEVERE, "", ex);
+        Runnable r = () -> {
+            try {
+                while (!stopped) {
+                    //wait until explicitely (re)started
+                    startLatch.await();
+                    paused = false;
+                    senderAlgorithm();
                 }
-                logger.info("STOPPING SENDER for " + session);
+            } catch (InterruptedException ie) {
+                ie.printStackTrace();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+                log.error("", ex);
             }
+            log.info("STOPPING SENDER for " + session);
         };
         senderThread = UDTThreadFactory.get().newThread(r);
         String s = (session instanceof ServerSession) ? "ServerSession" : "ClientSession";
@@ -191,9 +189,9 @@ public class UDTSender {
         statistics.incNumberOfSentDataPackets();
     }
 
-    protected void sendUdtPacket(ByteBuffer bb, int timeout, TimeUnit units) throws IOException, InterruptedException {
+    protected void sendUdtPacket(ByteBuffer bb, int timeout, TimeUnit units) throws InterruptedException {
         if (!started) start();
-        DataPacket packet = null;
+        DataPacket packet;
         do {
             packet = flowWindow.getForProducer();
             if (packet == null) {
@@ -220,11 +218,9 @@ public class UDTSender {
      *
      * @param timeout
      * @param units
-     * @return
-     * @throws IOException
      * @throws InterruptedException
      */
-    protected void sendUdtPacket(byte[] data, int timeout, TimeUnit units) throws IOException, InterruptedException {
+    protected void sendUdtPacket(byte[] data, int timeout, TimeUnit units) throws InterruptedException {
         if (!started) start();
         DataPacket packet = null;
         do {
@@ -310,11 +306,8 @@ public class UDTSender {
         session.getSocket().getReceiver().resetEXPTimer();
         statistics.incNumberOfNAKReceived();
 
-        if (logger.isLoggable(Level.FINER)) {
-            logger.finer("NAK for " + nak.getDecodedLossInfo().size() + " packets lost, "
-                                 + "set send period to " + session.getCongestionControl().getSendInterval());
-        }
-        return;
+        log.debug("NAK for " + nak.getDecodedLossInfo().size() + " packets lost, "
+                             + "set send period to " + session.getCongestionControl().getSendInterval());
     }
 
     //send single keep alive packet -> move to socket!
@@ -384,8 +377,6 @@ public class UDTSender {
 
     /**
      * re-transmit an entry from the sender loss list
-     *
-     * @param entry
      */
     protected void handleRetransmit(Long seqNumber) {
         try {
@@ -400,7 +391,7 @@ public class UDTSender {
                 statistics.incNumberOfRetransmittedDataPackets();
             }
         } catch (Exception e) {
-            logger.log(Level.WARNING, "", e);
+            log.warn("", e);
         }
     }
 

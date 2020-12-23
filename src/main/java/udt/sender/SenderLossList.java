@@ -1,22 +1,22 @@
 /*********************************************************************************
  * Copyright (c) 2010 Forschungszentrum Juelich GmbH 
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * (1) Redistributions of source code must retain the above copyright notice,
  * this list of conditions and the disclaimer at the end. Redistributions in
  * binary form must reproduce the above copyright notice, this list of
  * conditions and the following disclaimer in the documentation and/or other
  * materials provided with the distribution.
- * 
+ *
  * (2) Neither the name of Forschungszentrum Juelich GmbH nor the names of its 
  * contributors may be used to endorse or promote products derived from this 
  * software without specific prior written permission.
- * 
+ *
  * DISCLAIMER
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -31,6 +31,7 @@
  *********************************************************************************/
 
 package udt.sender;
+
 import java.util.LinkedList;
 
 /**
@@ -38,54 +39,54 @@ import java.util.LinkedList;
  */
 public class SenderLossList {
 
-	private final LinkedList<Long>backingList;
+    private final LinkedList<Long> backingList;
 
-	/**
-	 * create a new sender lost list
-	 */
-	public SenderLossList(){
-		backingList = new LinkedList<Long>();
-	}
+    /**
+     * create a new sender lost list
+     */
+    public SenderLossList() {
+        backingList = new LinkedList<>();
+    }
 
-	public void insert(Long obj){
-		synchronized (backingList) {
-			for(int i=0;i<backingList.size();i++){
-				Long entry=backingList.get(i);
-				if(obj<entry){
-					backingList.add(i,obj);	
-					return;
-				}
-				else if(obj.equals(entry))return;
-			}
-			backingList.add(obj);
-		}
-	}
+    public void insert(Long obj) {
+        synchronized (backingList) {
+            for (int i = 0; i < backingList.size(); i++) {
+                Long entry = backingList.get(i);
+                if (obj < entry) {
+                    backingList.add(i, obj);
+                    return;
+                } else if (obj.equals(entry)) return;
+            }
+            backingList.add(obj);
+        }
+    }
 
-	public void remove(Long obj){
-		synchronized (backingList) {
-			backingList.remove(obj);
-		}
-	}
-	/**
-	 * retrieves the loss list entry with the lowest sequence number, or <code>null</code> if loss list is empty
-	 */
-	public Long getFirstEntry(){
-		synchronized(backingList){
-			return backingList.poll();
-		}
-	}
-	
-	public boolean isEmpty(){
-		return backingList.isEmpty();
-	}
+    public void remove(Long obj) {
+        synchronized (backingList) {
+            backingList.remove(obj);
+        }
+    }
 
-	public int size(){
-		return backingList.size();
-	}
+    /**
+     * retrieves the loss list entry with the lowest sequence number, or <code>null</code> if loss list is empty
+     */
+    public Long getFirstEntry() {
+        synchronized (backingList) {
+            return backingList.poll();
+        }
+    }
 
-	public String toString(){
-		synchronized (backingList) {
-			return backingList.toString();	
-		}
-	}
+    public boolean isEmpty() {
+        return backingList.isEmpty();
+    }
+
+    public int size() {
+        return backingList.size();
+    }
+
+    public String toString() {
+        synchronized (backingList) {
+            return backingList.toString();
+        }
+    }
 }

@@ -1,22 +1,22 @@
 /*********************************************************************************
  * Copyright (c) 2010 Forschungszentrum Juelich GmbH 
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * (1) Redistributions of source code must retain the above copyright notice,
  * this list of conditions and the disclaimer at the end. Redistributions in
  * binary form must reproduce the above copyright notice, this list of
  * conditions and the following disclaimer in the documentation and/or other
  * materials provided with the distribution.
- * 
+ *
  * (2) Neither the name of Forschungszentrum Juelich GmbH nor the names of its 
  * contributors may be used to endorse or promote products derived from this 
  * software without specific prior written permission.
- * 
+ *
  * DISCLAIMER
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -35,134 +35,134 @@ package udt.packets;
 import udt.UDTPacket;
 import udt.UDTSession;
 
-public class DataPacket implements UDTPacket, Comparable<UDTPacket>{
+public class DataPacket implements UDTPacket, Comparable<UDTPacket> {
 
-	private byte[] data ;
-	private long packetSequenceNumber;
-	private long messageNumber;
-	private long timeStamp;
-	private long destinationID;
+    private byte[] data;
+    private long packetSequenceNumber;
+    private long messageNumber;
+    private long timeStamp;
+    private long destinationID;
 
-	private UDTSession session;
+    private UDTSession session;
 
-	private int dataLength;
-	
-	public DataPacket(){
-	}
+    private int dataLength;
 
-	/**
-	 * create a DataPacket from the given raw data
-	 * 
-	 * @param encodedData - network data
-	 */
-	public DataPacket(byte[] encodedData){
-		this(encodedData,encodedData.length);
-	}
+    public DataPacket() {
+    }
 
-	public DataPacket(byte[] encodedData, int length){
-		decode(encodedData,length);
-	}
-	
-	void decode(byte[]encodedData,int length){
-		packetSequenceNumber=PacketUtil.decode(encodedData, 0);
-		messageNumber=PacketUtil.decode(encodedData, 4);
-		timeStamp=PacketUtil.decode(encodedData, 8);
-		destinationID=PacketUtil.decode(encodedData, 12);
-		dataLength=length-16;
-		data=new byte[dataLength];
-		System.arraycopy(encodedData, 16, data, 0, dataLength);
-	}
+    /**
+     * create a DataPacket from the given raw data
+     *
+     * @param encodedData - network data
+     */
+    public DataPacket(byte[] encodedData) {
+        this(encodedData, encodedData.length);
+    }
 
+    public DataPacket(byte[] encodedData, int length) {
+        decode(encodedData, length);
+    }
 
-	public byte[] getData() {
-		return this.data;
-	}
-
-	public int getLength(){
-		return dataLength;
-	}
-
-	public void setLength(int length){
-		dataLength=length;
-	}
-	
-	public void setData(byte[] data) {
-		this.data = data;
-		dataLength=data.length;
-	}
-
-	public long getPacketSequenceNumber() {
-		return this.packetSequenceNumber;
-	}
-
-	public void setPacketSequenceNumber(long sequenceNumber) {
-		this.packetSequenceNumber = sequenceNumber;
-	}
+    void decode(byte[] encodedData, int length) {
+        packetSequenceNumber = PacketUtil.decode(encodedData, 0);
+        messageNumber = PacketUtil.decode(encodedData, 4);
+        timeStamp = PacketUtil.decode(encodedData, 8);
+        destinationID = PacketUtil.decode(encodedData, 12);
+        dataLength = length - 16;
+        data = new byte[dataLength];
+        System.arraycopy(encodedData, 16, data, 0, dataLength);
+    }
 
 
-	public long getMessageNumber() {
-		return this.messageNumber;
-	}
+    public byte[] getData() {
+        return this.data;
+    }
 
-	public void setMessageNumber(long messageNumber) {
-		this.messageNumber = messageNumber;
-	}
+    public void setData(byte[] data) {
+        this.data = data;
+        dataLength = data.length;
+    }
 
-	public long getDestinationID() {
-		return this.destinationID;
-	}
+    public int getLength() {
+        return dataLength;
+    }
 
-	public long getTimeStamp() {
-		return this.timeStamp;
-	}
+    public void setLength(int length) {
+        dataLength = length;
+    }
 
-	public void setDestinationID(long destinationID) {
-		this.destinationID=destinationID;
-	}
+    public long getPacketSequenceNumber() {
+        return this.packetSequenceNumber;
+    }
 
-	public void setTimeStamp(long timeStamp) {
-		this.timeStamp=timeStamp;
-	}
+    public void setPacketSequenceNumber(long sequenceNumber) {
+        this.packetSequenceNumber = sequenceNumber;
+    }
 
-	/**
-	 * complete header+data packet for transmission
-	 */
-	public byte[] getEncoded(){
-		//header.length is 16
-		byte[] result=new byte[16+dataLength];
-		System.arraycopy(PacketUtil.encode(packetSequenceNumber), 0, result, 0, 4);
-		System.arraycopy(PacketUtil.encode(messageNumber), 0, result, 4, 4);
-		System.arraycopy(PacketUtil.encode(timeStamp), 0, result, 8, 4);
-		System.arraycopy(PacketUtil.encode(destinationID), 0, result, 12, 4);
-		System.arraycopy(data, 0, result, 16, dataLength);
-		return result;
-	}
 
-	public boolean isControlPacket(){
-		return false;
-	}
+    public long getMessageNumber() {
+        return this.messageNumber;
+    }
 
-	public boolean forSender(){
-		return false;
-	}
+    public void setMessageNumber(long messageNumber) {
+        this.messageNumber = messageNumber;
+    }
 
-	public boolean isConnectionHandshake(){
-		return false;
-	}
-	
-	public int getControlPacketType(){
-		return -1;
-	}
-	
-	public UDTSession getSession() {
-		return session;
-	}
+    public long getDestinationID() {
+        return this.destinationID;
+    }
 
-	public void setSession(UDTSession session) {
-		this.session = session;
-	}
+    public void setDestinationID(long destinationID) {
+        this.destinationID = destinationID;
+    }
 
-	public int compareTo(UDTPacket other){
-		return (int)(getPacketSequenceNumber()-other.getPacketSequenceNumber());
-	}
+    public long getTimeStamp() {
+        return this.timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
+    }
+
+    /**
+     * complete header+data packet for transmission
+     */
+    public byte[] getEncoded() {
+        //header.length is 16
+        byte[] result = new byte[16 + dataLength];
+        System.arraycopy(PacketUtil.encode(packetSequenceNumber), 0, result, 0, 4);
+        System.arraycopy(PacketUtil.encode(messageNumber), 0, result, 4, 4);
+        System.arraycopy(PacketUtil.encode(timeStamp), 0, result, 8, 4);
+        System.arraycopy(PacketUtil.encode(destinationID), 0, result, 12, 4);
+        System.arraycopy(data, 0, result, 16, dataLength);
+        return result;
+    }
+
+    public boolean isControlPacket() {
+        return false;
+    }
+
+    public boolean forSender() {
+        return false;
+    }
+
+    public boolean isConnectionHandshake() {
+        return false;
+    }
+
+    public int getControlPacketType() {
+        return -1;
+    }
+
+    public UDTSession getSession() {
+        return session;
+    }
+
+    public void setSession(UDTSession session) {
+        this.session = session;
+    }
+
+    public int compareTo(UDTPacket other) {
+        return (int) (getPacketSequenceNumber() - other.getPacketSequenceNumber());
+    }
 }
